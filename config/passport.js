@@ -8,7 +8,7 @@ const bcrypt= require("bcrypt")
 passport.use(new LocalStrategy(
    async (username, password, done)=> {
     try {
-        const user= User.findOne({ username: username });
+        const user= await User.findOne({ username: username });
         if(!user){
             return done(null, false, {message: "incorrect username"})
         }

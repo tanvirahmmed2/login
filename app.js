@@ -8,9 +8,10 @@ const saltRounds = 10
 
 const passport = require("passport")
 const session = require("express-session")
-const MongoStore= require("connect-mongo")
+const MongoStore = require("connect-mongo")
 
 require("./config/config")
+require("./config/passport")
 require("dotenv").config()
 
 const MONGO_URL = process.env.MONGO_URL
@@ -86,9 +87,12 @@ app.get("/login", (req, res) => {
 })
 
 //login post
-app.post('/login', (req, res) => {
+app.post('/login',
+    passport.authenticate('local', { 
+        failureRedirect: '/login', 
+        successRedirect: "/profile" })
 
-})
+);
 
 
 
