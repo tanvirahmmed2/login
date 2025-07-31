@@ -7,9 +7,13 @@ const bcrypt = require("bcrypt")
 const saltRounds = 10
 
 const passport = require("passport")
-const session= require("express-session")
+const session = require("express-session")
+const MongoStore= require("connect-mongo")
 
-require("./config")
+require("./config/config")
+require("dotenv").config()
+
+const MONGO_URL = process.env.MONGO_URL
 
 const User = require("./model/user.model")
 
@@ -18,13 +22,22 @@ app.use(cors())
 app.use(exprees.urlencoded({ extended: true }))
 app.use(exprees.json())
 
+//session
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-//   cookie: { secure: true }
-}))
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: MONGO_URL,
+        collectionName: "session"
+    }),
+    //   cookie: { secure: true }
+})
+)
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 //home route
@@ -46,8 +59,8 @@ app.post("/register", async (req, res) => {
         const user = await User.findOne({ username: req.body.username })
         if (user) return res.status(400).send("user already exists")
 
-        bcrypt.hash(req.body.password, saltRounds, async (err, hash)=> {
-            const newUser = new User ({
+        bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
+            const newUser = new User({
                 username: req.body.username,
                 password: hash,
             })
@@ -73,7 +86,7 @@ app.get("/login", (req, res) => {
 })
 
 //login post
-app.post('/login', (req,res)=>{
+app.post('/login', (req, res) => {
 
 })
 
