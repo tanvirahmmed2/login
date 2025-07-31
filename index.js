@@ -1,12 +1,7 @@
 require("dotenv").config()
-const exprees= require("express")
-
-
-
-
 
 const PORT=process.env.PORT || 4000
-const app= exprees()
+const app= require("./app")
 
 
 app.listen(PORT,()=>{
