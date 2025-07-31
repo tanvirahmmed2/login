@@ -80,9 +80,14 @@ app.post("/register", async (req, res) => {
     }
 })
 
-
+const checkLogin=(req,res, next)=>{
+    if(req.isAuthenticated()){
+        return res.redirect("/profile")
+    }
+    next()
+}
 //login page
-app.get("/login", (req, res) => {
+app.get("/login", checkLogin, (req, res) => {
     res.render("login")
 })
 
@@ -96,9 +101,12 @@ app.post('/login',
 
 
 
-//profile 
+//profile protected
 app.get("/profile", (req, res) => {
-    res.render("profile")
+    if(req.isAuthenticated()){
+       return res.render("profile")
+    }
+    res.redirect("/login")
 })
 
 
@@ -108,7 +116,16 @@ app.get("/profile", (req, res) => {
 
 //logout
 app.get("/logout", (req, res) => {
-    res.redirect("/")
+    try {
+        req.logOut((err)=>{
+            if(err){
+                return next(err)
+            }
+            res.redirect("/")
+        })
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
 })
 
 
