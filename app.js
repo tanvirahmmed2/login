@@ -33,7 +33,6 @@ app.use(session({
         mongoUrl: MONGO_URL,
         collectionName: "session"
     }),
-    //   cookie: { secure: true }
 })
 )
 
@@ -87,17 +86,28 @@ const checkLogin=(req,res, next)=>{
     next()
 }
 //login page
-app.get("/login", checkLogin, (req, res) => {
-    res.render("login")
-})
+// app.get("/login", checkLogin, (req, res) => {
+//     res.render("login")
+// })
 
-//login post
-app.post('/login',
-    passport.authenticate('local', { 
-        failureRedirect: '/login', 
-        successRedirect: "/profile" })
+// //login post
+// app.post('/login',
+//     passport.authenticate('local', { 
+//         failureRedirect: '/login', 
+//         successRedirect: "/profile" })
 
-);
+// );
+
+// google auth
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 
 
 
